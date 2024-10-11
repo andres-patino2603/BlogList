@@ -59,6 +59,7 @@ describe('most likes', () => {
         author: 'Edsger W. Dijkstra',
         likes: 17
       };
+      console.log(result)
       assert.deepStrictEqual(result, expected);
     });
   
