@@ -44,10 +44,8 @@ blogsRouter.get('/:id', (request, response, next) => {
     try {
       const result = await Blog.findByIdAndDelete(request.params.id);
       if (result) {
-        console.log(`Blog deleted: ${result}`);
         response.status(204).end();
       } else {
-        console.log('Blog not found');
         response.status(404).end();
       }
     } catch (error) {
@@ -55,22 +53,20 @@ blogsRouter.get('/:id', (request, response, next) => {
     }
   });
 
-  blogsRouter.put('/:id', (request, response, next) => {
+  blogsRouter.put('/:id', async (request, response, next) => {
     const body = request.body;
-  
     const blog = {
-        title: body.title,
-        author: body.author,
-        url: body.url,
         likes: body.likes,
     };
-
-    Blog.findByIdAndUpdate(request.params.id, blog, { new: true, runValidators: true, context: 'query' })
-        .then(updatedBlog => {
+    try {
+        const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true });
+        if (updatedBlog) {
             response.json(updatedBlog);
-        })
-        .catch(error => {
-            next(error); // Llama a next con el error para manejarlo adecuadamente
-        });
+        } else {
+            response.status(404).end();
+        }
+    } catch (error) {
+        next(error);
+    }
 });
   module.exports = blogsRouter
